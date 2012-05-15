@@ -1,0 +1,56 @@
+Binarytree 0.8
+
+This is a beta of my Binarytree library, it is a collection of subroutines for the creation and manipulating of binary trees for the DCPU-16.
+This is just a beta it is still missing a subroutine to prune nodes from the tree.
+
+ --------------------------------------------
+ Tree Specification
+ --------------------------------------------
+ Each node is 32 words long. The first three
+ words are pointers, the next 28 words are 
+ data, and the last word is 0x0000.
+
+ null = 0xFFFF, this must be stored as a 
+ variable in your program somewhere, eg
+
+ :null DAT 0xFFFF
+ --------------------------------------------
+ Pointers
+ --------------------------------------------
+ EOT:
+ Points to the next availble memory location
+ after tree data.
+
+ Parent: 
+ Points to the memory location of the Parent
+ node.
+
+ LC:
+ Memory location of left child node.
+
+ RC:
+ Memory location of Right child node.
+ --------------------------------------------
+ Node Structure
+ --------------------------------------------
+ Root Node:
+ EOT, LC, RC, Data(28), 0x0000
+
+ Branch Node:
+ Parent, LC, RC, Data(28), 0x0000
+
+ Leaf node:
+ Parent, NULL, NULL, Data(28), 0x0000
+ --------------------------------------------
+
+Upcoming features in 1.0
+
+Complete rewrite of fuctions, mainly merging the New Tree and AddNode functions, and change the way 
+nodes are selected, ie not needing to reference them by memory loaction.
+Modifying the Root node to not point to EOT.
+Creating to header words, one to point to the root node, another to act as the EOT pointer
+Subroutine for the deletion of nodes.
+Pre-order traversal function.
+Removal of the 28 word data limit.
+Instead of the FillData routine filling the node with 0xFFFF, it will accept data from a buffer.
+

@@ -1,0 +1,220 @@
+; --------------------------------------------
+; Title:   Binarytree
+; Author:  James Januszka
+; Date:    13/05/2012
+; Version: 0.8
+; --------------------------------------------
+; --------------------------------------------
+; Tree Specification
+; --------------------------------------------
+; Each node is 32 words long. The first three
+; words are pointers, the next 28 words are 
+; data, and the last word is 0x0000.
+;
+; null = 0xFFFF, this must be stored as a 
+; variable in your program somewhere, eg
+;
+; :null DAT 0xFFFF
+; --------------------------------------------
+; Pointers
+; --------------------------------------------
+; EOT:
+; Points to the next availble memory location
+; after tree data.
+;
+; Parent: 
+; Points to the memory location of the Parent
+; node.
+;
+; LC:
+; Memory location of left child node.
+;
+; RC:
+; Memory location of Right child node.
+; --------------------------------------------
+; Node Structure
+; --------------------------------------------
+; Root Node:
+; EOT, LC, RC, Data(28), 0x0000
+;
+; Branch Node:
+; Parent, LC, RC, Data(28), 0x0000
+;
+; Leaf node:
+; Parent, NULL, NULL, Data(28), 0x0000
+; --------------------------------------------
+
+
+; --------------------------------------------
+; NewTree
+; --------------------------------------------
+; Creates a new tree instance at the memory 
+; location referenced by register A
+; --------------------------------------------
+:NewTree
+
+set push,j
+
+set j,a
+
+add j,1
+set [j],null ; set left child node pointer to NULL
+add j,1
+set [j],null ; set right child node pointer to NULL
+add j,1
+
+set a,[fill]
+jsr FillData
+
+add j,1
+set a,tree
+set [a],j
+
+set j,pop
+set pc,pop 
+
+; --------------------------------------------
+; AddNode
+; --------------------------------------------
+; Creates a new node at the memory 
+; location referenced by register A
+; --------------------------------------------
+:AddNode
+set push,a
+set push,b
+set push,j
+add b,1
+set j,tree
+
+set j,[j] ; set j to end of tree
+set [j],a ; set pointer to parent node
+
+add a,b
+set [a],j ; set parent's child pointer
+
+add j,1
+set [j],null ; set left child node pointer to NULL
+add j,1
+set [j],null ; set right child node pointer to NULL
+add j,1
+
+set a,[fill]
+jsr FillData
+
+add j,1
+set a,tree
+set [a],j
+
+.end
+set j,pop
+set b,pop
+set a,pop
+set pc,pop
+
+; --------------------------------------------
+; Traverse
+; --------------------------------------------
+; Moves down the tree one node, starting at  
+; the memory location referenced by register
+; A. Register B indicates which child node to
+; move to, eg if B = 0 then move to the left 
+; child. if B = 1 move to the right child.
+; 
+; --------------------------------------------
+:Traverse
+set push,b
+add b,1
+add a,b
+set a,[a]
+set b,pop
+set pc,pop
+
+; --------------------------------------------
+; InsertNode
+; --------------------------------------------
+; Inserts a new branch and child node between 
+; the memory location referenced by register A
+; and it's parent node. B register is used to 
+; indicated if the new child node will be on 
+; the left or right, eg B = 0 for left, B = 1
+; for right.
+; --------------------------------------------
+:insertNode
+set push,a
+
+set push,i
+set push,j
+
+set j,tree
+
+set j,[j] ; set j to end of tree
+set [j],[a] ; set pointer to parent's parent node
+
+set i,a
+set a,[a]
+add a,1
+ife a,i
+	set pc,editchild
+add a,1
+.editchild
+set [a],j 
+
+set a,i
+set [a],j ; set parent's child pointer
+
+
+ife b,1
+	set pc,newrightchild	
+add j,1
+set [j],null ; set right child node pointer to NULL
+add j,1 
+set [j],a ; set left child pointer
+set pc,endnewchild
+
+.newrightchild
+add j,1
+set [j],a ; set right child pointer
+add j,1
+set [j],null ; set left child node pointer to NULL
+set pc,endnewchild
+
+.endnewchild
+;set i,0x0000 ; zero counter
+add j,1
+
+set a,[fill]
+jsr FillData
+
+add j,1
+set a,tree
+set [a],j ; set root node EOT pointer
+
+set a,[i]
+jsr AddNode ; must have two children, not one
+
+.end
+set j,pop
+set i,pop
+
+set a,pop
+set pc,pop
+
+; --------------------------------------------
+; FillData
+; --------------------------------------------
+; Fills the data element of a node referenced 
+; by the memory location referenced by 
+; register J, 28 times, with the value 
+; 0xFFFF.
+; --------------------------------------------
+:FillData
+set push,i
+set i,0x0000 ; zero counter
+.dataloop
+sti [j],null ;fill data and increment J and I
+ife i,a;0x001c ; loop 28 times
+	set pc,end
+set pc,dataloop
+.end
+set i,pop
+set pc,pop
