@@ -1,8 +1,8 @@
 ; --------------------------------------------
 ; Title:   Binarytree
 ; Author:  James Januszka
-; Date:    13/05/2012
-; Version: 0.8
+; Date:    16/05/2012
+; Version: 0.8a
 ; --------------------------------------------
 ; --------------------------------------------
 ; Tree Specification
@@ -12,9 +12,11 @@
 ; data, and the last word is 0x0000.
 ;
 ; null = 0xFFFF, this must be stored as a 
-; variable in your program somewhere, eg
+; definition in your program somewhere, and eg
+; :fill must be a variable
 ;
-; :null DAT 0xFFFF
+; #define null 0xFFFF
+; :fill DAT 0x001C
 ; --------------------------------------------
 ; Pointers
 ; --------------------------------------------
@@ -179,7 +181,6 @@ set [j],null ; set left child node pointer to NULL
 set pc,endnewchild
 
 .endnewchild
-;set i,0x0000 ; zero counter
 add j,1
 
 set a,[fill]
@@ -203,16 +204,16 @@ set pc,pop
 ; FillData
 ; --------------------------------------------
 ; Fills the data element of a node referenced 
-; by the memory location referenced by 
-; register J, 28 times, with the value 
-; 0xFFFF.
+; by the memory location pointed to by  
+; register J, register [a] times, with the  
+; value 0xFFFF.
 ; --------------------------------------------
 :FillData
 set push,i
 set i,0x0000 ; zero counter
 .dataloop
 sti [j],null ;fill data and increment J and I
-ife i,a;0x001c ; loop 28 times
+ife i,a; loop [a] times
 	set pc,end
 set pc,dataloop
 .end

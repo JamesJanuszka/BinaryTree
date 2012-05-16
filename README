@@ -1,6 +1,6 @@
-Binarytree 0.8
+Binarytree 0.8a
 
-This is a beta of my Binarytree library, it is a collection of subroutines for the creation and manipulating of binary trees for the DCPU-16.
+This is a beta of my Binary tree library, it is a collection of subroutines for the creation and manipulating of binary trees for the DCPU-16.
 This is just a beta it is still missing a subroutine to prune nodes from the tree.
 
  --------------------------------------------
@@ -11,11 +11,11 @@ This is just a beta it is still missing a subroutine to prune nodes from the tre
  data, and the last word is 0x0000.
 
  null = 0xFFFF, this must be stored as a 
- variable in your program somewhere, eg
+ definition in your program somewhere, and eg
+ :fill must be a variable
 
- :null DAT 0xFFFF
- --------------------------------------------
- Pointers
+ #define null 0xFFFF
+ :fill DAT 0x001C
  --------------------------------------------
  EOT:
  Points to the next availble memory location
@@ -53,4 +53,8 @@ Subroutine for the deletion of nodes.
 Pre-order traversal function.
 Removal of the 28 word data limit.
 Instead of the FillData routine filling the node with 0xFFFF, it will accept data from a buffer.
+
+Change log
+
+0.8a Corrected some remarks in the code
 
